@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('បញ្ចូលឈ្មោះ...');
@@ -97,12 +98,16 @@ const handleSubmit = (e: React.FormEvent) => {
             </div>
 
             {/* Submit Button */}
+            <Link href={"./Homepage"}>
+            
             <button
+            
               type="submit"
               className="w-full py-4 rounded-xl bg-[#e11d48] text-white text-xl font-semibold transition shadow-lg"
             >
               ចូល
             </button>
+            </Link>
           </form>
         </div>
       </div>
