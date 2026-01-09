@@ -30,13 +30,15 @@ export default function RootLayout({
   
   return (
     <html lang="km" className={kantumruyPro.className}>
-      <body>
+      <body className="custom-scrollbar">
         {/* Apply font globally to ALL Ant Design components */}
         <ConfigProvider
           theme={{
             token: {
               fontFamily: "inherit", // ← very important! tells AntD to use parent's font
               colorPrimary: "#E11D48",
+              borderRadiusLG: 28,
+
               // You can add more token overrides here...
             },
             components: {
@@ -44,11 +46,10 @@ export default function RootLayout({
                 itemActiveColor: "#E11D48",
                 itemActiveBg: "#fff1f0",
               },
-
-              Modal: {      
-               contentBg: '#F2F2F2',          
-               },
-              // Drawer, Button, etc. will automatically inherit fontFamily
+               Modal: {      
+               contentBg: '#F2F2F2',           
+               }
+               
             },
           }}
         >
