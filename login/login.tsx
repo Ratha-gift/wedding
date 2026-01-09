@@ -98,7 +98,7 @@ const handleSubmit = (e: React.FormEvent) => {
             </div>
 
             {/* Submit Button */}
-            <Link href={"./Homepage"}>
+            <Link href={"/Homepage"}>
             
             <button
             
