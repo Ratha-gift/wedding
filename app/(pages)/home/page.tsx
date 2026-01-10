@@ -15,13 +15,13 @@ export default function HomePage() {
       <div className="w-full h-200 flex justify-end p-8">
         <div className="w-55 h-12 bg-white flex items-center justify-center gap-3 rounded-xl shadow-lg">
           
-          <Link href="#">
+          <Link href="/Setting">
             <h3 className={`text-[#E11D48] text-[17px] ${kantumruyPro.className}`}>
               គ្រប់គ្រងអ្នកប្រើប្រាស់
             </h3>
           </Link>
 
-          <Link href="#">
+          <Link href="/Setting">
             <IoSettingsSharp className="text-[#E11D48] text-3xl" />
           </Link>
 
