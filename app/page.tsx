@@ -1,10 +1,15 @@
-import LoginPage from "../login/login";   // ← probably ok
-// import Page from "../Homepage/page";     // ← this name is dangerous
+"use client";
 
-// export function Page() {                           // ←←← PROBLEM HERE
-//   return <HomePage />;
-// }
+import { useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { useAuth } from "./src/lib/useAuth";
+import LoginPage from "./(pages)/login/page";
+import { Home } from "lucide-react";
 
-export default function HomePage() {
-  return <LoginPage />;
+export default function RootPage() {
+  const { islogin } = useAuth();
+  const router = useRouter();
+
+
+  return islogin ? router.push("/home") : <LoginPage />;
 }

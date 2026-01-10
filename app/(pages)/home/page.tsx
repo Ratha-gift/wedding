@@ -8,7 +8,7 @@ const kantumruyPro = Kantumruy_Pro({
   weight: ['400'],
 });
 
-export default function Page() {
+export default function HomePage() {
   return (
     <div className="w-full h-screen bg-[url('/backround.png')] bg-cover bg-center bg-no-repeat flex flex-col items-end justify-center">
       
@@ -29,13 +29,13 @@ export default function Page() {
       </div>
 
       <div className="w-full h-70 flex flex-col items-center justify-center gap-7">
-        <Link href="#">
+        <Link href="./guest">
           <h1 className={`w-xs h-14 bg-[#E11D48] text-white text-xl flex items-center justify-center rounded-xl shadow-xl ${kantumruyPro.className}`}>
             បញ្ចូលភ្ញៀវកិត្តិយស
           </h1>
         </Link>
 
-        <Link href="#">
+        <Link href="./amount">
           <h1 className={`w-xs h-14 bg-[#E11D48] text-white text-xl flex items-center justify-center rounded-xl shadow-xl ${kantumruyPro.className}`}>
             បញ្ចូលចំណងដៃ
           </h1>
