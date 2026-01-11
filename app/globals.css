@@ -1,2 +1,34 @@
 @import "tailwindcss";
-     
+/* Style the scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 3px; /* Width of the scrollbar */
+    height: 3px; /* Height of horizontal scrollbar to keep it slim */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+
+    border-radius: 10px; /* Rounded edges */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c2bebe; /* Scrollbar thumb color */
+    border-radius: 10px; /* Rounded thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #919090; /* Darker color on hover */
+}
+
+:root {
+  --main-color: #e11d48;
+}
+
+.bg-\[var\(--main-color\)\] {
+  background-color: var(--main-color);
+}
+
+/* change full modal card background */
+.custom-modal .ant-modal-content {
+  background-color: #F2F2F2;   /* your color */
+  border-radius: 20px;
+}
