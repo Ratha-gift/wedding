@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 import { useAuth } from "./src/lib/useAuth";
-import LoginPage from "./(pages)/login/page";
+import LoginPage from "./(pages)/(public)/login/page";
 import { Home } from "lucide-react";
 
 export default function RootPage() {
