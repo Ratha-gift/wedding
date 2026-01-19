@@ -1,4 +1,3 @@
-
 "use client";
 import { Kantumruy_Pro, Noto_Sans } from "next/font/google";
 import { ConfigProvider } from "antd";
