@@ -163,10 +163,10 @@ const Table = <T extends Record<string, any>>({
                     
                     {showResizeHandle && (
                       <div
-                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 h-[2rem] w-[2px] cursor-col-resize rounded transition-all duration-200 ${
+                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 h-8 w-0.5 cursor-col-resize rounded transition-all duration-200 ${
                           resizing?.colIndex === index 
                             ? 'bg-blue-500 scale-110' 
-                            : 'bg-white hover:bg-blue-400 hover:scale-105 hover:w-[4px]'
+                            : 'bg-white hover:bg-blue-400 hover:scale-105 hover:w-1'
                         }`}
                         onMouseDown={(e) => startResize(e, index)}
                         title="Drag to resize"
@@ -180,7 +180,7 @@ const Table = <T extends Record<string, any>>({
           <tbody className="divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="p-3 h-[15rem] text-center text-sm">
+                <td colSpan={columns.length} className="p-3 h-60 text-center text-sm">
                   {loadingComponent || <div>Loading...</div>}
                 </td>
               </tr>

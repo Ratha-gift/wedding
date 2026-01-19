@@ -18,7 +18,7 @@ function Searchname({
     Children = "",
     className,
     textColor = "", 
-    width = "w-85", 
+    width = "w-80", 
     height = "h-12", 
     border = "",
     radius = "rounded-md",

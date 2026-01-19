@@ -1,6 +1,6 @@
 "use client";
 //api
-import api  from "../server/api";
+import api,{Authorization} from "../../server/api";
 //icons
 import { useEffect, useState } from "react";
 import { IoHomeSharp } from "react-icons/io5";
@@ -10,12 +10,17 @@ import { RiFileExcel2Line } from "react-icons/ri";
 //components
 import Table from "@/app/Components/Table/table";
 import MyPagination from "@/app/Components/Pagination/pagination";
-import Modalcreate from "@/app/Components/Modal/modal";
+import Modalcreate from "../../../Components/Modal/modal";
 import Link from "antd/es/typography/Link";
 import DrawerFilter from "@/app/Components/Button/filter";
 import DropdownProfile from "@/app/Components/Dropdown/profile";
 import SearchInput from "@/app/Components/input/input";
-import { useAuth } from "../../src/lib/useAuth";
+import { useAuth } from "../../../src/lib/useAuth";
+import Header from "@/app/Components/Header/header";
+import Searchname from "@/app/Components/input/Searchname";
+import { Input, DatePicker, Radio, Button } from "antd";
+import Allbutton from "@/app/Components/Button/Allbutton";
+
 
 
 
@@ -122,29 +127,28 @@ export default function GuestInformationTable() {
     }
   }, [currentPage, entriesPerPage, token, islogin]);
 
-  const fetchGuest = async () => {
-    try {
-      setLoading(true);
+const fetchGuest = async () => {
+  try {
+    setLoading(true);
 
-      const res = await api.get("/guest", {
-        params: {
-          page: currentPage,
-          per_page: entriesPerPage,
-          sort_by: "guest_id",
-          sort_direction: "desc",
-        },
-        // headers: { ...Authorization() }
-      });
+    const res = await api.get("/guest",{
+      params: {
+        page: currentPage,
+        per_page: entriesPerPage,
+        sort_by: "guest_id",
+        sort_direction: "desc",
+      },
+      headers: { ...Authorization() }
+    });
+    setData(res.data.data);
+    setTotalEntries(res.data.meta.total);
 
-      setData(res.data.data);
-      setTotalEntries(res.data.meta.total);
-
-    } catch (err: any) {
-      console.error("FETCH ERROR:", err.response?.data || err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err: any) {
+    console.error("FETCH ERROR:", err.response?.data || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const createGuest = async (payload: {
     guest_name: string;
@@ -161,9 +165,8 @@ export default function GuestInformationTable() {
         "/guest/create",
         payload,
         {
-          // headers: {
-          //   ...Authorization(),
-          // },
+          headers: { ...Authorization() }
+
         }
       );
 
@@ -203,40 +206,64 @@ export default function GuestInformationTable() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="h-[65px] bg-[#E11D48] text-white flex items-center justify-between px-6">
-        <div className="flex items-center gap-2 text-4xl font-medium">
-          <Link href="/Homepage" className="items-center justify-center p-2 rounded-lg transition"
-            aria-label="Go to Home">
-            <IoHomeSharp className="text-white" size={28} />
-          </Link>
-          បញ្ចូលភ្ញៀវកិត្តិយស
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg  transition"
-            aria-label="Toggle Dark Mode"
-          >
-            {dark ? (
-              <MdOutlineLightMode size={24} />
-            ) : (
-              <RiMoonClearLine size={24} />
-            )}
-          </button>
-          <DropdownProfile />
-        </div>
-      </header>
-
+     <Header title="បញ្ចូលភ្ញៀវកិត្តិយស"/>
       {/* CONTENT */}
       <div className=" mx-6 p-3 bg-white mt-4 shadow">
         {/* TOOLBAR */}
         <div className="flex justify-between items-center mb-3">
-          <div className="flex gap-2">
-            <SearchInput />
+           <div className=" w-138 h-13 flex justify-between items-center">
+                  <Searchname Children="ស្វែងរក...." className=" border-2 border-[#e11d48] p-3 w-104 text-lg"/>
+                  <DrawerFilter width={400}>
+                    <div className=" ">
 
-            <DrawerFilter />
-          </div>
-          <div className="flex gap-2">
+                      <div className="space-y-4">
+                        {/* Name */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">ឈ្មោះ</label>
+                          <Input  style={{ backgroundColor: "#ffffff" }} bordered={false} placeholder="បញ្ចូលឈ្មោះ..." className="h-10 "/>
+                        </div>
+
+                        {/* Date */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">កាលបរិច្ឆេទ</label>
+                          <div className="flex gap-2">
+                            <DatePicker style={{ backgroundColor: "#ffffff" }} bordered={false}  className="w-full h-10" />
+                            <DatePicker style={{ backgroundColor: "#ffffff" }} bordered={false} className="w-full h-10" />
+                          </div>
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">លេខទូរស័ព្ទ</label>
+                          <Input style={{ backgroundColor: "#ffffff" }} bordered={false} placeholder="បញ្ចូលលេខទូរស័ព្ទ..." className="h-10"/>
+                        </div>
+
+                        {/* Location */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">ទីតាំង</label>
+                          <Input style={{ backgroundColor: "#ffffff" }} bordered={false} placeholder="បញ្ចូលទីតាំង..." className="h-10" />
+                        </div>
+
+                        {/* Status / Gender */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">ស្ថានភាព:</label>
+                          <Radio.Group className="flex gap-4 mt-2">
+                            <Radio value={1}>ខាងប្រុស</Radio>
+                            <Radio value={2}>ខាងស្រី</Radio>
+                            <Radio value={3}>ផ្សេងៗ</Radio>
+                          </Radio.Group>
+                        </div>
+                      </div>
+
+                      {/* Footer Buttons */}
+                      <div className="flex gap-3 mt-6 h-15">
+                        <Allbutton Children='បោះបង់' className='bg-[#e7e7e7] text-[#e11d48] shadow-lg text-lg w-40'/>
+                        <Allbutton Children='អនុវត្តន៍' className='text-white text-lg shadow-lg shadow-[#9c9c9c] w-50'/>
+                      </div>
+                    </div>
+                  </DrawerFilter>
+                </div>
+           <div className="flex gap-2">
 
             <Modalcreate onSuccess={fetchGuest} />
 
@@ -254,7 +281,7 @@ export default function GuestInformationTable() {
 
         {/* TABLE */}
         <Table
-          height="13rem"
+          height="15rem"
           columns={columns}
           data={data}
           loading={loading}

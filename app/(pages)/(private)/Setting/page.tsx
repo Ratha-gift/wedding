@@ -1,58 +1,28 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ConfigProvider, theme, PaginationProps,  } from 'antd'; // ← add theme import if needed
-import Header from "../components/Haeder";
-import Search from "../components/Input/Search";
-import Table from "../components/Table/Table";
-import Filter from "../components/button/Filter"; 
-import Create from "../components/button/Create";
-import MySwitch from "../components/button/Switch";
-import Actions from "../components/button/Actions";
+import Header from "../../../Components/Header/header";
+import Search from "../../../Components/Button/search";
+import Table from "../../../Components/Table/table";
+import DrawerFilter from "../../../Components/Button/filter"; 
+import Create from "../../../Components/Modal/create";
+import MySwitch from "../../../Components/Button/switch";
+import Actions from "@/app/Components/Button/Actions";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { BiSolidEdit } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
-import Searchname from "../components/Input/Searchname";
-import Allbutton from "../components/button/Allbutton";
-import ProfileEdit from "../components/profile/ProfileEdit";
-import DropdownForm from "../components/Dropdowns/DropdownsEdit";
+import Allbutton from "../../../Components/Button/Allbutton";
+import ProfileEdit from "../../../Components/Dropdown/edit_profile";
+import DropdownForm from "../../../Components/Dropdown/changPW";
 import { FaExclamationTriangle } from "react-icons/fa";
-import MyPagination from "../components/Pagination/Pagination";
-
-
-const mockUsers = [
-  { id: 1, name: "សុខ សុភា", email: "ឡីឡី", username: "sopheasok", role: "Admin", },
-  { id: 2, name: "លី សុភ័ក្ត្រ", email: "លីលី", username: "sophea_lee", role: "Editor", },
-  { id: 3, name: "ផល សុខា", email: "ភៅភៅ", username: "sokhaphal", role: "Viewer", },
-  { id: 4, name: "គីម សុភី", email: "ពាំពាំ", username: "sophea_kim", role: "Admin", },
-  { id: 5, name: "វណ្ណ សុភ័ក្ត្រ", email: "បាបា", username: "vannsophea", role: "Editor", },
-  { id: 6, name: "ធី សុភា", email: "បូបូ", username: "sopheathy", role: "Viewer", },
-  { id: 7, name: "ចាន់ វណ្ណរ៉ា", email: "លោលោ", username: "vannarachan", role: "Editor", },
-  { id: 8, name: "សៀ រតនា", email: "កាកា", username: "ratanasea", role: "Viewer", },
-  { id: 9, name: "ហេង សុភក្ស", email: "មិមិ", username: "sophea_heng", role: "Admin", },
-  { id: 10, name: "នាង សុភី", email: "នានា", username: "sophea_neang", role: "Editor", },
-];
-
-
-const generateMockData = (baseData: typeof mockUsers, count: number = 85) => {
-  const result = [...baseData];
-  for (let i = baseData.length + 1; i <= count; i++) {
-    const base = baseData[(i - 1) % baseData.length];
-    result.push({
-      ...base,
-      id: i,
-      name: `${base.name.split(" ")[0]} ${base.name.split(" ")[1] || ""} ${i}`,
-      username: `${base.username}${i}`,
-      email: `${base.email.split("@")[0]}${i}@${base.email.split("@")[1]}`,
-    });
-  }
-  return result;
-};
-
-const allUsers = generateMockData(mockUsers, 120); 
+import MyPagination from "@/app/Components/Pagination/pagination";
+import Searchname from "@/app/Components/input/Searchname";
+import api from "../../server/api";
 
 const columns = [
-  { header: "ល.រ", accessor: "id", width: 80 },
-  { header: "នាមត្រកូល", accessor: "name", width: 220 },
+  { header: "ល.រ", accessor: "user_id", width: 80 },
+  { header: "នាមត្រកូល", accessor: "first_name", width: 220 },
+  { header: "នាមត្រកូល", accessor: "last_name", width: 220 },
   { header: "នាមខ្លួន",
     render: (row: any) => (
       <div className="truncate">
@@ -60,16 +30,20 @@ const columns = [
       </div>
     ),
    },
-  { header: "Username", accessor: "username", width: 160 },
-  { 
-    header: "ស្ថានភាព",
-    width: 140,
-    render: () => (
-      <div className="">
-        <MySwitch />
-      </div>
-    ),
-  },
+  { header: "Username", accessor: "user_name", width: 160 },
+ {
+  header: "ស្ថានភាព",
+  width: 140,
+  render: (row: any) => (
+    <div className="">
+      <MySwitch 
+        checked={row.status === 1} 
+        // បើចង់ឲ្យ toggle ផ្លាស់ប្តូរទិន្នន័យពិតប្រាកដ (update API ឬ state)
+        // onChange={(newChecked) => handleToggleStatus(row.id, newChecked)}
+      />
+    </div>
+  ),
+},
   {
     header: "Actions",
     width: 140,
@@ -87,9 +61,9 @@ const columns = [
           <div className=" grid mt-10">
            <div className="grid justify-center items-center">
                <h1 className="text-[#e11d48] text-xl">លេខសម្ងាត់ថ្មី</h1>
-                      <Searchname Children="Password" type="password" className="bg-white text-xl p-3 w-120" /> 
+                      <Search Children="Password" type="password" className="bg-white text-xl p-3 w-120" /> 
                  <h1 className="text-[#e11d48] mt-8 text-xl">បញ្ជាក់លេខសម្ងាត់ថ្មី</h1>    
-                       <Searchname Children="Password" type="password" className="bg-white text-xl p-3 w-120" /> 
+                       <Search Children="Password" type="password" className="bg-white text-xl p-3 w-120" /> 
             </div>
             <div className=" flex mt-10 justify-center gap-10">
               <Allbutton Children="បោះបង់" className=" w-45 h-12 bg-[#e7e7e7] text-[#e11d48] shadow-lg text-xl"/>
@@ -106,17 +80,19 @@ const columns = [
           classNames=" flex justify-center items-end gap-2"
 
        >
+
+        
         <div className="flex mt-10 gap-13 items-center ">
           <div className=" grid ">
             <h1 className="text-xl text-[#e11d48]">នាមត្រកូល</h1>
-          <Searchname Children="នាមត្រកូល" className="bg-white text-xl p-3 w-90"/>
+          <Search Children="នាមត្រកូល" className="bg-white text-xl p-3 w-90"/>
           <h1 className="mt-5 text-xl text-[#e11d48]">នាមខ្លួន</h1>
-          <Searchname Children="នាមខ្លួន" className="bg-white text-xl p-3 w-90"/>
+          <Search Children="នាមខ្លួន" className="bg-white text-xl p-3 w-90"/>
           </div>
           <ProfileEdit />
         </div>
         <h1 className="text-xl text-[#e11e48] mt-4">ឈ្មោះអ្នកប្រើប្រាស់</h1>
-        <Searchname Children="ឈ្មោះអ្នកប្រើប្រាស់" className="bg-white text-xl p-3 w-135 mb-4"/>
+        <Search Children="ឈ្មោះអ្នកប្រើប្រាស់" className="bg-white text-xl p-3 w-135 mb-4"/>
         <div className="h-50 ">
         <DropdownForm />
         </div>
@@ -144,19 +120,43 @@ const columns = [
   },
 ];
 
+//////////
+
 export default function SettingsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize] = useState(10);                    // you can make dynamic later
+  const [users, setUsers] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return allUsers.slice(start, end);
+
+  const fetchUsers = async (page: number) => {
+    try {
+      // setLoading(true);
+      const res = await api.get('/user/list', {
+        params: {
+          page,
+          per_page: pageSize,
+        },
+      });
+      const { data, meta } = res.data;
+      setUsers(data || []);
+      setTotal(meta?.total || 0);
+    } catch (err: any){
+      console.log("error");
+      
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(currentPage);
+
   }, [currentPage]);
 
-  const handlePageChange: PaginationProps['onChange'] = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  ////////
 
   return (
     <ConfigProvider
@@ -180,30 +180,43 @@ export default function SettingsPage() {
         <div className="p-3">
           <div className="bg-white rounded-2xl p-2 shadow-sm">
             {/* Top controls */}
-            <div className="w-full flex items-center pb-4 gap-2 p-1 flex-wrap">
-              <div className="w-full sm:w-137.5 h-12 flex gap-2">
-                <Search />
+            <div className="w-full flex items-center pb-5 gap-2 p-1 flex-wrap">
+              <div className="w-full sm:w-134 h-12 flex gap-2 mt-1">
+                <Search Children="ស្វែងរក" className=" border-2 border-[#e11d48] w-130 p-3" />
               </div>
-              <div className="">
-                <Filter />
-              </div>
-              <div className="flex-1 flex justify-end">
+                 <div className="w-24 h-10">
+                  <DrawerFilter width={400}>
+                    <div className="">
+                      <h1 className="text-lg text-[#e11d48] font-bold">ឈ្មោះ</h1>
+                      <Searchname Children="ស្វែងរកតាមឈ្មោះ..." className="bg-white p-3 text-lg w-88 "/>
+                    </div>
+                    <div className="bg-white w-88 h-12 mt-7 rounded-md flex items-center justify-between p-4">
+                        <h1 className="text-lg text-[#e11d48] font-bold">ស្ថានភាព</h1>
+                        <MySwitch />
+                    </div>
+                    <div className=" w-88 h-15 flex items-end gap-5">
+                        <Allbutton Children='បោះបង់' className='bg-[#e7e7e7] text-[#e11d48] shadow-lg text-lg w-40'/>
+                        <Allbutton Children='អនុវត្តន៍' className='text-white text-lg shadow-lg shadow-[#9c9c9c] w-50'/>
+                    </div>
+                  </DrawerFilter>
+                </div>
+                <div className="flex-1 flex justify-end">
                 <Create />
               </div>
             </div>
-
             <Table
               height="15rem"
               columns={columns}
-              data={paginatedData} 
+              data={users} 
             />
         <div className="mt-6 flex justify-end">
           <MyPagination
-            page={currentPage}
-            total={allUsers.length}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-          />
+                current={currentPage}
+                total={total}
+                pageSize={pageSize}
+                onChange={handlePageChange}
+                // showSizeChanger  ← add later if you want to support changing pageSize
+              />
         </div>
           </div>
         </div>

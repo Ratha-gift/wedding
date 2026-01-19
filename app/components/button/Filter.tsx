@@ -1,96 +1,46 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, ConfigProvider, Drawer, Input, DatePicker, Radio } from "antd";
-import { CiFilter } from "react-icons/ci";
+import { Button, Drawer } from "antd";
+import { FaFilter } from "react-icons/fa";
 
-const DrawerFilter: React.FC = () => {
-    const [open, setOpen] = useState(false);
+type DrawerFilterProps = {
+  width?: number;
+  children: React.ReactNode;
+};
 
-    return (
-        <ConfigProvider
-            theme={{
-                token: {
-                    fontFamily: "inherit",
-                    colorPrimary: "#E11D48",
-                },
+const DrawerFilter: React.FC<DrawerFilterProps> = ({
+  width = 360,
+  children,
+}) => {
+  const [open, setOpen] = useState(false);
 
-            }}
-        >
-            {/* Filter Button */}
-            <Button
-                type="primary"
-                className="flex items-center gap-2"
-                onClick={() => setOpen(true)}
-            >
-                <CiFilter size={22} />
-                ច្រោះ
-            </Button>
+  return (
+    <>
+      <Button
+        type="primary"
+        className="flex items-center gap-2 w-30 "
+        onClick={() => setOpen(true)}
+         style={{ height: "45px", fontSize: "18px" }}
+      >
+        <FaFilter size={22} />
+        ច្រោះ
+      </Button>
 
-            {/* Drawer */}
-            <Drawer
-                placement="right"
-                open={open}
-                onClose={() => setOpen(false)}
-                width={360}
-                closable={false}
-                styles={{
-                    body: {
-                        backgroundColor: "#F2F2F2",
-                        padding: 20,
-                    },
-                }}
-            >
-                {/* Custom Header */}
-                {/* <div className="mb-4">
-          <h2 className="text-lg font-semibold text-red-600">ច្រោះ</h2>
-        </div> */}
-
-                {/* Filter Form */}
-                <div className="space-y-4">
-                    <div>
-                        <label className="text-red-600 font-medium text-base">ឈ្មោះ</label>
-                        <Input placeholder="បញ្ចូលឈ្មោះ..." />
-                    </div>
-
-                    <div>
-                        <label className="text-red-600 font-medium text-base">កាលបរិច្ឆេទ</label>
-                        <div className="flex gap-2">
-                            <DatePicker className="w-full" />
-                            <DatePicker className="w-full" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="text-red-600 font-medium text-base">លេខទូរស័ព្ទ</label>
-                        <Input placeholder="បញ្ចូលលេខទូរស័ព្ទ..." />
-                    </div>
-
-                    <div>
-                        <label className="text-red-600 font-medium text-base">ទីតាំង</label>
-                        <Input placeholder="បញ្ចូលទីតាំង..." />
-                    </div>
-
-                    <div>
-                        <label className="text-red-600 font-medium text-base">ស្ថានភាព:</label>
-                        <Radio.Group className="flex gap-4 mt-2">
-                            <Radio value={1}>ខាងប្រុស</Radio>
-                            <Radio value={2}>ខាងស្រី</Radio>
-                            <Radio value={3}>ផ្សេងៗ</Radio>
-                        </Radio.Group>
-                    </div>
-                </div>
-
-                {/* Footer Buttons */}
-                <div className="flex gap-3 mt-6">
-                    <Button className="w-1/2">បោះបង់</Button>
-                    <Button type="primary" className="w-1/2">
-                        រក្សាទុក
-                    </Button>
-                </div>
-            </Drawer>
-        </ConfigProvider>
-    );
+      {/* Drawer */}
+      <Drawer
+        placement="right"
+        open={open}
+        onClose={() => setOpen(false)}
+        width={width}
+        title={null}
+        closable={false}
+        style={{ backgroundColor: "#F2F2F2" }}
+      >
+        {children}
+      </Drawer>
+    </>
+  );
 };
 
 export default DrawerFilter;

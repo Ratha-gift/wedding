@@ -1,10 +1,22 @@
+// Components/Bu/MySwitch.tsx  (ឬណាដែលអ្នកដាក់)
 import React from 'react';
 import { Switch } from 'antd';
 
-const onChange = (checked: boolean) => {
-  console.log(`switch to ${checked}`);
+interface MySwitchProps {
+  checked: boolean;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean; // បើចង់ disable ពេល loading
+}
+
+const MySwitch: React.FC<MySwitchProps> = ({ checked, onChange, disabled = false }) => {
+  return (
+    <Switch
+      checked={checked}
+      onChange={onChange}
+      disabled={disabled}
+      size="default" // ឬ "small" បើចង់តូច
+    />
+  );
 };
 
-const MySwitch : React.FC = () => <Switch defaultChecked onChange={onChange} />;
-
-export default MySwitch ;
+export default MySwitch;
