@@ -3,10 +3,10 @@
 import { useState} from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import api from '../server/api';
+import api from '../../server/api';
 import type { AxiosError } from 'axios';
 import Link from 'next/link';
-import { useAuth } from '../../src/lib/useAuth';
+import { useAuth } from '../../../src/lib/useAuth';
 
 export default function LoginPage() {
   const router = useRouter();

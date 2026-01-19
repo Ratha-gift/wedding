@@ -52,12 +52,13 @@ const MyPagination: React.FC<MyPaginationProps> = ({
 
       {/* Pagination */}
       <Pagination
-        showQuickJumper
+        showQuickJumper={{goButton: "page"}}
+        showSizeChanger={false} 
         current={currentPage}
         total={totalEntries}
         pageSize={entriesPerPage}
         onChange={handleChange}
-        showSizeChanger={false} // we control size manually
+    
       />
     </div>
   );

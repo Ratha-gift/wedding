@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, ConfigProvider, Drawer, Input, DatePicker, Radio } from "antd";
-import { CiFilter } from "react-icons/ci";
+import { FaFilter } from "react-icons/fa";
 
 const DrawerFilter: React.FC = () => {
     const [open, setOpen] = useState(false);
@@ -14,8 +14,16 @@ const DrawerFilter: React.FC = () => {
                     fontFamily: "inherit",
                     colorPrimary: "#E11D48",
                 },
+                components: {
+                    Button: {
+                        colorPrimary: '#E11D48',
+                        borderRadius: 6,
+                        controlHeight: 40,
+                    },
+                },
 
             }}
+
         >
             {/* Filter Button */}
             <Button
@@ -23,8 +31,10 @@ const DrawerFilter: React.FC = () => {
                 className="flex items-center gap-2"
                 onClick={() => setOpen(true)}
             >
-                <CiFilter size={22} />
-                ច្រោះ
+                <FaFilter size={22} />
+                <span className="font-Kantumruy text-[16px] font-medium">
+                    ច្រោះ
+                </span>
             </Button>
 
             {/* Drawer */}
@@ -85,7 +95,7 @@ const DrawerFilter: React.FC = () => {
                 <div className="flex gap-3 mt-6">
                     <Button className="w-1/2">បោះបង់</Button>
                     <Button type="primary" className="w-1/2">
-                        រក្សាទុក
+                        អនុវត្តន៍
                     </Button>
                 </div>
             </Drawer>
