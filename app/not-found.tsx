@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { AllData } from './Components/Data/Image/image';
+import { AllData } from './src/Components/Data/Image/image';
 export default function Custom404() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-gray-800 relative bg-cover bg-center"

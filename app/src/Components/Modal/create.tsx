@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
-import Allbutton from '../Button/Allbutton';
+import Allbutton from '../Button/allbutton';
 import Searchname from '../Button/search';
 
 const Create: React.FC = () => {

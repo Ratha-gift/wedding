@@ -3,13 +3,14 @@
 import { useState} from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import api from '../../server/api';
+import api from '../../../server/api';
 import type { AxiosError } from 'axios';
-import Link from 'next/link';
 import { useAuth } from '../../../src/lib/useAuth';
-import { AllData } from "@/app/Components/Data/Image/image";
+import { AllData } from '@/app/src/Components/Data/Image/image';
+
 
 export default function LoginPage() {
+  
   const router = useRouter();
   const { onLogin } = useAuth();
   const [username, setUsername] = useState('');
@@ -35,7 +36,7 @@ export default function LoginPage() {
       // Redirect to home
       
       onLogin(access_token)
-      router.push("./home")
+      router.push("/")
 
     } catch (err) {
       const error = err as AxiosError<any>;

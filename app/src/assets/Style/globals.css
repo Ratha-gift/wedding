@@ -1,4 +1,19 @@
 @import "tailwindcss";
+
+
+@font-face {
+    font-family: kantumruy_pro;
+    src: url(../Fonts/KantumruyPro-VariableFont_wght.ttf);
+}
+
+:root{
+    --font-kantumruy: kantumruy_pro, "sans_serif";
+}
+
+body{
+    font-family: var(--font-kantumruy);
+}
+
 /* Style the scrollbar for Webkit browsers (Chrome, Safari, Edge) */
 .custom-scrollbar::-webkit-scrollbar {
     width: 3px; /* Width of the scrollbar */
