@@ -3,10 +3,11 @@
 import { useState} from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import api from '../server/api';
+import api from '../../server/api';
 import type { AxiosError } from 'axios';
 import Link from 'next/link';
-import { useAuth } from '../../src/lib/useAuth';
+import { useAuth } from '../../../src/lib/useAuth';
+import { AllData } from "@/app/Components/Data/Image/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 relative bg-cover bg-center"
-      style={{ backgroundImage: "url('./backround_login.png')" }}
+      style={{ backgroundImage: `url(${AllData.Background.data})` }}
     >
       <div className="absolute inset-0 bg-pink-50/30" />
 

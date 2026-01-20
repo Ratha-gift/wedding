@@ -41,6 +41,7 @@ function Search({
         <span 
           className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-xl text-gray-500"
           onClick={() => setShowPassword(!showPassword)}
+          
         >
           {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
         </span>

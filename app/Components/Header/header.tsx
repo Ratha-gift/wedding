@@ -12,7 +12,7 @@ function Header() {
     <div>
         <div className='w-full h-19 bg-[#e11d48] flex items-center p-2'>
         <div className='w-6xl h-16  flex gap-7 items-center'>
-            <Link href={"/Homepage"}>
+            <Link href={"/home"}>
                <IoHomeSharp className='text-3xl text-white'/>
                   </Link>
                      <h1 className={`text-white text-xl  ${kantumruyPro.className}`}>គ្រប់គ្រងអ្នកប្រើប្រាស់</h1>
