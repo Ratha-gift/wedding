@@ -1,19 +1,15 @@
-// src/lib/store.ts
 import { create } from 'zustand';
-
-// Optional: For persistence
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface AuthStore {
- 
+
   islogin : boolean;
   token?: string;
   onLogin: (token:string) => void;
    onLogout: () => void;
 }
-
 export const useAuth = create<AuthStore>()(
-  // Uncomment for persistence:
+
    persist(
   (set) => ({
     islogin: false,

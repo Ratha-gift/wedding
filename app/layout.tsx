@@ -1,23 +1,8 @@
 "use client";
-import { Kantumruy_Pro, Noto_Sans } from "next/font/google";
 import { ConfigProvider } from "antd";
-import "./globals.css";
+import "./src/assets/Style/globals.css";
 import { useAuth } from "./src/lib/useAuth";
 
-// Load font (you can add more weights if needed)
-const kantumruyPro = Kantumruy_Pro({
-  subsets: ["khmer"],
-  weight: ["400", "500", "700"], // ← add more weights if your design needs them
-  display: "swap",               // good practice
-  variable: "--font-kantumruy",  // optional but useful for tailwind or custom css
-});
-
-const notoSans = Noto_Sans({
-  subsets: ["latin"],
-  weight: ["400", "700"], // ← add more weights if your design needs them
-  display: "swap",        // good practice
-  variable: "--font-noto",// optional but useful for tailwind or custom css
-});
 
 export default function RootLayout({
   children,
@@ -28,7 +13,7 @@ export default function RootLayout({
   const { islogin } = useAuth();
   
   return (
-    <html lang="km" className={kantumruyPro.className}>
+    <html lang="km">
       <body>
         {/* Apply font globally to ALL Ant Design components */}
         <ConfigProvider

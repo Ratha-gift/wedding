@@ -1,27 +1,26 @@
 "use client";
 //api
-import api from "../../server/api";
+import api from "@/app/server/api";
 import { useEffect, useState } from "react";
 import { IoHomeSharp } from "react-icons/io5";
 import { MdOutlineLightMode } from "react-icons/md";
 import { RiMoonClearLine } from "react-icons/ri";
 import { RiFileExcel2Line } from "react-icons/ri";
 //components
-import Table from "@/app/Components/Table/table";
-import MyPagination from "@/app/Components/Pagination/pagination";
-import ModalCreate from "@/app/Components/Modal/modal";
+import Table from "@/app/src/Components/Table/table";
+import MyPagination from "@/app/src/Components/Pagination/pagination";
+import ModalCreate from "@/app/src/Components/Modal/modal";
 import Link from "antd/es/typography/Link";
-import DrawerFilter from "@/app/Components/Button/filter";
-import DropdownProfile from "@/app/Components/Dropdown/profile";
-import SearchInput from "@/app/Components/input/input";
+import DrawerFilter from "@/app/src/Components/Button/filter";
+import DropdownProfile from "@/app/src/Components/Dropdown/profile";
+import SearchInput from "@/app/src/Components/input/input";
 import { useAuth } from "../../../src/lib/useAuth";
-
-
-
-import { Button } from "antd";
-
-
+import { Input, DatePicker, Radio, Button } from "antd";
+import Allbutton from "@/app/src/Components/Button/allbutton";
+import { useRequireAuth } from '@/app/src/Hooks/useAuthRedirect';
 export default function GuestInformationTable() {
+  useRequireAuth();
+  
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleSuccess = () => {
@@ -296,7 +295,55 @@ export default function GuestInformationTable() {
           <div className="flex gap-2">
             <SearchInput />
 
-            <DrawerFilter />
+            <DrawerFilter width={400}>
+                    <div className=" ">
+
+                      <div className="space-y-4">
+                        {/* Name */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">ឈ្មោះ</label>
+                          <Input  style={{ backgroundColor: "#ffffff" }} bordered={false} placeholder="បញ្ចូលឈ្មោះ..." className="h-10 "/>
+                        </div>
+
+                        {/* Date */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">កាលបរិច្ឆេទ</label>
+                          <div className="flex gap-2">
+                            <DatePicker style={{ backgroundColor: "#ffffff" }} bordered={false}  className="w-full h-10" />
+                            <DatePicker style={{ backgroundColor: "#ffffff" }} bordered={false} className="w-full h-10" />
+                          </div>
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">លេខទូរស័ព្ទ</label>
+                          <Input style={{ backgroundColor: "#ffffff" }} bordered={false} placeholder="បញ្ចូលលេខទូរស័ព្ទ..." className="h-10"/>
+                        </div>
+
+                        {/* Location */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">ទីតាំង</label>
+                          <Input style={{ backgroundColor: "#ffffff" }} bordered={false} placeholder="បញ្ចូលទីតាំង..." className="h-10" />
+                        </div>
+
+                        {/* Status / Gender */}
+                        <div>
+                          <label className="text-red-600 font-medium text-base">ស្ថានភាព:</label>
+                          <Radio.Group className="flex gap-4 mt-2">
+                            <Radio value={1}>ខាងប្រុស</Radio>
+                            <Radio value={2}>ខាងស្រី</Radio>
+                            <Radio value={3}>ផ្សេងៗ</Radio>
+                          </Radio.Group>
+                        </div>
+                      </div>
+
+                      {/* Footer Buttons */}
+                      <div className="flex gap-3 mt-6 h-15">
+                        <Allbutton Children='បោះបង់' className='bg-[#e7e7e7] text-[#e11d48] shadow-lg text-lg w-40'/>
+                        <Allbutton Children='អនុវត្តន៍' className='text-white text-lg shadow-lg shadow-[#9c9c9c] w-50'/>
+                      </div>
+                    </div>
+                  </DrawerFilter>
           </div>
           <div className="flex gap-2">
             <Button
@@ -333,7 +380,6 @@ export default function GuestInformationTable() {
               className="bg-[#686868] text-white px-4 py-1 rounded flex items-center gap-1">
               <RiFileExcel2Line />
               បញ្ចូល
-              
             </button>
           </div>
         </div>
@@ -348,13 +394,14 @@ export default function GuestInformationTable() {
           onRowSelect={setSelectedRow}
           modalRender={(row, onClose) => (
             <ModalCreate
-              open={true}
+              open
+              mode="edit"
+              // initialData={row}
               onCancel={onClose}
               onSuccess={() => {
                 onClose();
+                fetchGuest();
               }}
-              mode="edit"                     
-              initialData={row}              
             />
           )}
         />
@@ -363,6 +410,7 @@ export default function GuestInformationTable() {
           <ModalCreate
             open={!!selectedRow}
             onCancel={() => setSelectedRow(null)}
+            onSuccess={() => setSelectedRow(null)}
             initialData={selectedRow}
           />
         )}

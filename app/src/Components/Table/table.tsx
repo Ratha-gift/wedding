@@ -83,7 +83,6 @@ const Table = <T extends Record<string, any>>({
   const [resizing, setResizing] = useState<{ colIndex: number; startX: number; startWidth: number } | null>(null);
   const tableRef = useRef<HTMLDivElement>(null);
 
-  // ─── Resizing logic (unchanged) ───────────────────────
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!resizing) return;
@@ -162,7 +161,7 @@ const Table = <T extends Record<string, any>>({
                 return (
                   <th
                     key={index}
-                    className={`${column.cellPadding || 'p-3'} text-left sticky text-white top-0 ${headerZIndex} text-sm bg-[#E11D48] font-semibold uppercase tracking-wider relative group ${column.headerClassName || ''}`}
+                    className={`${column.cellPadding || 'p-3'} text-left sticky text-white top-0 ${headerZIndex} text-sm bg-[#E11D48] uppercase tracking-wider relative group ${column.headerClassName || ''}`}
                     style={{
                       width: isAutoWidth ? 'auto' : width,
                       minWidth: isAutoWidth ? 'auto' : width,

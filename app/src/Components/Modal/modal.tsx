@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Input, Radio, ConfigProvider, message } from "antd";
-import api from "../../(pages)/server/api";
+import api from "@/app/server/api";
 
 type GuestForm = {
   id?: number;
