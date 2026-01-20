@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Kantumruy_Pro } from 'next/font/google'
 import { IoSettingsSharp } from "react-icons/io5";
-
+import { AllData } from "@/app/Components/Data/Image/image";
 const kantumruyPro = Kantumruy_Pro({
   subsets: ['khmer'],
   weight: ['400'],
@@ -10,7 +10,7 @@ const kantumruyPro = Kantumruy_Pro({
 
 export default function HomePage() {
   return (
-    <div className="w-full h-screen bg-[url('/backround.png')] bg-cover bg-center bg-no-repeat flex flex-col items-end justify-center">
+    <div style={{ backgroundImage: `url(${AllData.BackgroundURL.data})` }} className="w-full h-screen bg-[url('/backround.png')] bg-cover bg-center bg-no-repeat flex flex-col items-end justify-center">
       
       <div className="w-full h-200 flex justify-end p-8">
         <div className="w-55 h-12 bg-white flex items-center justify-center gap-3 rounded-xl shadow-lg">
