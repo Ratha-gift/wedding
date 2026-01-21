@@ -266,7 +266,7 @@ export default function GuestInformationTable() {
     <div className="min-h-screen bg-gray-100">
       <header className="h-[65px] bg-[#E11D48] text-white flex items-center justify-between px-6">
         <div className="flex items-center gap-2 text-4xl font-medium">
-          <Link href="/home" className="items-center justify-center p-2 rounded-lg transition"
+          <Link href="/" className="items-center justify-center p-2 rounded-lg transition"
             aria-label="Go to Home">
             <IoHomeSharp className="text-white" size={28} />
           </Link>
