@@ -1,10 +1,29 @@
 import React from 'react';
-import { Switch } from 'antd';
+import { Switch, ConfigProvider } from 'antd';
 
 const onChange = (checked: boolean) => {
   console.log(`switch to ${checked}`);
 };
 
-const MySwitch : React.FC = () => <Switch defaultChecked onChange={onChange} />;
+const MyBigSwitch: React.FC = () => {
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Switch: {
 
-export default MySwitch ;
+            handleSize: 15,         
+            trackHeight: 20,       
+            trackMinWidth: 40,   
+           
+            borderRadius: 3,   
+          },
+        },
+      }}
+    >
+      <Switch defaultChecked onChange={onChange} />
+    </ConfigProvider>
+  );
+};
+
+export default MyBigSwitch;

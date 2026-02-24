@@ -1,15 +1,19 @@
-// hooks/useAuthRedirect.ts
+'use client';
+
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // or 'next/router' in older versions
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/useAuth';
 
 export function useRequireAuth(redirectTo: string = '/login') {
-  const { islogin } = useAuth();
+  const { islogin, hasHydrated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!islogin) {
+    // Only check after rehydration
+    if (hasHydrated && !islogin) {
       router.replace(redirectTo);
     }
-  }, [islogin, router, redirectTo]);
+  }, [hasHydrated, islogin, router, redirectTo]);
 }
+
+

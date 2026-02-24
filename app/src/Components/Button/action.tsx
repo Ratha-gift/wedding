@@ -26,7 +26,7 @@ export default function Actions({
   children,
   modalTitle = "Modal",
   Radius = "10px",
-  bgColor = "#", // ✅ default color
+  bgColor = "#", // default color
 }: SaveButtonProps) {
   const [open, setOpen] = useState(false);
 
@@ -55,9 +55,9 @@ export default function Actions({
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.35)", // ព្រាល
+            backgroundColor: "rgba(0,0,0,0.35)", 
             backdropFilter: "blur(6px)",
-            WebkitBackdropFilter: "blur(6px)", // ✅ Safari
+            WebkitBackdropFilter: "blur(6px)", 
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

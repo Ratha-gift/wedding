@@ -42,23 +42,28 @@ const MyPagination: React.FC<MyPaginationProps> = ({
         value={entriesPerPage}
         onChange={(value) => onEntriesPerPageChange(value)}
         options={[
-    
+
           { value: 10, label: "10 / page" },
           { value: 20, label: "20 / page" },
           { value: 50, label: "50 / page" },
+          { value: 100, label: "100 / page" },
         ]}
         style={{ width: 120 }}
       />
 
       {/* Pagination */}
       <Pagination
-        showQuickJumper={{goButton: "page"}}
-        showSizeChanger={false} 
+        // showQuickJumper={{ goButton: "page" }}
+        showSizeChanger={false}
         current={currentPage}
         total={totalEntries}
         pageSize={entriesPerPage}
         onChange={handleChange}
-    
+        showTotal={(total, range) =>
+          `${range[0]}-${range[1]} of ${total} items`
+        }
+
+
       />
     </div>
   );

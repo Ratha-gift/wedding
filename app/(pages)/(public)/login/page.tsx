@@ -8,7 +8,6 @@ import type { AxiosError } from 'axios';
 import { useAuth } from '../../../src/lib/useAuth';
 import { AllData } from '@/app/src/Components/Data/Image/image';
 
-
 export default function LoginPage() {
   
   const router = useRouter();
@@ -52,48 +51,48 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 relative bg-cover bg-center"
+      className="min-h-screen flex items-center justify-center px-5 relative bg-cover bg-center"
       style={{ backgroundImage: `url(${AllData.Background.data})` }}
     >
-      <div className="absolute inset-0 bg-pink-50/30" />
+      {/* <div className="absolute inset-0 bg-pink-50/30" /> */}
 
       <div className="relative z-10 w-full max-w-md">
         <form onSubmit={handleSubmit} className="space-y-10">
-          <h1 className="text-center text-4xl font-semibold text-red-600">
+          <h1 className="text-center  text-4xl font-semibold text-[#FF0000]">
             ចូលគណនី
           </h1>
 
           {/* Username */}
           <div>
-            <label className="text-red-600 text-xl font-semibold">ឈ្មោះ</label>
+            <label className="text-[#FF0000] text-xl font-medium">ឈ្មោះអ្នកប្រើប្រាស់</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="បញ្ចូលឈ្មោះ..."
-              className="w-full px-6 py-3 rounded-xl bg-[#ffd1d1] focus:outline-none"
+              className="w-full px-6 py-3 mt-1 rounded-xl bg-[#ffd1d1] focus:outline-1 focus:outline-[#FF0000]"
               required
             />
           </div>
 
           {/* Password */}
-          <div>
-            <label className="text-red-600 text-xl font-semibold">
-              ពាក្យសម្ងាត់
+          <div  className="mt-[-13px]">
+            <label className="text-[#FF0000] text-xl font-medium">
+              លេខសម្ងាត់
             </label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="បញ្ចូលពាក្យសម្ងាត់..."
-                className="w-full px-6 py-3 rounded-xl bg-[#ffd1d1] focus:outline-none"
+                placeholder="បញ្ចូលលេខសម្ងាត់..."
+                className="w-full  px-6 py-3 mt-1 rounded-xl bg-[#ffd1d1] focus:outline-1 focus:outline-[#FF0000]"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-5 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 "
               >
                 {showPassword ? <Eye /> : <EyeOff />}
               </button>
@@ -102,7 +101,7 @@ export default function LoginPage() {
 
           {/* Error */}
           {error && (
-            <p className="text-red-600 text-center font-medium">
+            <p className="text-[#FF0000] text-center font-medium">
               {error}
             </p>
           )}
@@ -112,7 +111,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-xl bg-[#e11d48] text-white text-xl font-semibold"
+            className=" mt-[50px] w-full py-4 rounded-xl bg-[#e11d48] text-white text-xl font-semibold"
           >
             {loading ? 'កំពុងចូល...' : 'ចូល'}
           </button>

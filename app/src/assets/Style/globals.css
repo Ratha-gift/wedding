@@ -1,49 +1,78 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
     font-family: kantumruy_pro;
     src: url(../Fonts/KantumruyPro-VariableFont_wght.ttf);
-}
+}       
 
-:root{
+:root {
     --font-kantumruy: kantumruy_pro, "sans_serif";
 }
+html {
+  transition: background-color 0.3s, color 0.3s;
+}
 
-body{
+body {
     font-family: var(--font-kantumruy);
+    background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color .3s, color .3s;
 }
 
 /* Style the scrollbar for Webkit browsers (Chrome, Safari, Edge) */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 3px; /* Width of the scrollbar */
-    height: 3px; /* Height of horizontal scrollbar to keep it slim */
+    width: 3px;
+    /* Width of the scrollbar */
+    height: 3px;
+    /* Height of horizontal scrollbar to keep it slim */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
 
-    border-radius: 10px; /* Rounded edges */
+    border-radius: 10px;
+    /* Rounded edges */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #c2bebe; /* Scrollbar thumb color */
-    border-radius: 10px; /* Rounded thumb */
+    background: var(--scrollbar);
+    /* Scrollbar thumb color */
+    border-radius: 10px;
+    /* Rounded thumb */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #919090; /* Darker color on hover */
+   background: var(--scrollbar-hover);
+    /* Darker color on hover */
 }
 
 :root {
-  --main-color: #e11d48;
+    --main-color: #e11d48;
+
+    --bg-color: #ffffff;
+    --card-bg: #f2f2f2;
+    --text-color: #111827;
+    --scrollbar: #c2bebe;
+    --scrollbar-hover: #919090;
+    --input-autofill: #ffd1d1;
 }
 
 .bg-\[var\(--main-color\)\] {
-  background-color: var(--main-color);
+    background-color: var(--main-color);
 }
 
 /* change full modal card background */
 .custom-modal .ant-modal-content {
-  background-color: #F2F2F2;   /* your color */
+     background-color: var(--card-bg);
   border-radius: 20px;
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-autofill) inset !important;
+  box-shadow: 0 0 0px 1000px var(--input-autofill) inset !important;
+  -webkit-text-fill-color: var(--text-color) !important;
 }

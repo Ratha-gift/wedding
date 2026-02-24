@@ -1,6 +1,6 @@
-import React, { Children, ReactNode } from 'react'
+import React, { ReactNode } from 'react';
 
-interface SaveButtonProps{
+interface ButtonProps {
   children: ReactNode;
   width?: string;        
   height?: string;       
@@ -11,19 +11,37 @@ interface SaveButtonProps{
   className?: string;
   icon?: ReactNode | null;
   iconposition?: 'left' | 'right';
-
+  onClick?: () => void;          // added
+  type?: "button" | "submit" | "reset"; //  added
 }
 
-function Button({ Children ="",className = '', textColor = "", width="w-30", height="h-10", bg="bg-[#E11D48]", radius ="rounded-md", shadow ="shadow-2xl", iconposition="", icon=null }) {
+function Button({
+  children = "",
+  className = '',
+  textColor = "",
+  width = "w-30",
+  height = "h-10",
+  bg = "bg-[#E11D48]",
+  radius = "rounded-md",
+  shadow = "shadow-2xl",
+  iconposition,
+  icon = null,
+  onClick,
+  type = "button",
+}: ButtonProps) {
   return (
-    <button className={`${textColor} ${width} ${height} ${bg} ${radius} ${className} ${shadow} cursor-pointer flex items-center justify-center gap-2`}>
+    <button
+      type={type}
+      onClick={onClick}   //  works now
+      className={`${textColor} ${width} ${height} ${bg} ${radius} ${className} ${shadow} cursor-pointer flex items-center justify-center gap-2`}
+    >
       {icon && iconposition === "left" && icon}
 
-      {Children}
-      
+      {children}
+
       {icon && iconposition === "right" && icon}
     </button>
-  )
+  );
 }
 
 export default Button;
