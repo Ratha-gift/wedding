@@ -19,11 +19,11 @@ const DrawerFilter: React.FC<DrawerFilterProps> = ({
     <>
       <Button
         type="primary"
-        className="flex items-start gap-2 "
+        className="flex items-start "
         onClick={() => setOpen(true)}
-         style={{ height: "40px", width:"90px", fontSize: "18px" }}
+         style={{ height: "38px", width:"90px", fontSize: "18px" }}
       >
-        <FaFilter size={22} />
+      <FaFilter />
         ច្រោះ
       </Button>
 

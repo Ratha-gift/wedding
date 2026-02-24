@@ -15,13 +15,13 @@ export default function DropdownForm() {
 
         {/* Right action */}
         {!open ? (
-          // ✏️ Icon (closed)
+          //  Icon (closed)
           <MdEdit
             onClick={() => setOpen(true)}
             className="text-red-600 text-xl cursor-pointer hover:scale-110 transition"
           />
         ) : (
-          // ✅ Button (opened)
+          //  Button (opened)
           <span
             onClick={() => setOpen(false)}
             className="bg-blue-500 text-white px-4 py-1.5 rounded-lg cursor-pointer hover:bg-blue-600 transition"

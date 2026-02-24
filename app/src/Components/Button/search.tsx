@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { Eye, EyeOff } from 'lucide-react';
 
 interface SearchnameProps {
   Children?: string; // ← សម្រាប់ input placeholder
@@ -43,7 +43,7 @@ function Search({
           onClick={() => setShowPassword(!showPassword)}
           
         >
-          {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+          {showPassword ? <Eye /> : <EyeOff />}
         </span>
       )}
     </div>
