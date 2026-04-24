@@ -4,7 +4,7 @@ import api from "@/app/server/api";
 import { useEffect, useState } from "react";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
-import { message } from "antd";
+import { message, Select } from "antd";
 // components
 import Header from "@/app/src/Components/Header/header";
 import Table from "@/app/src/Components/Table/table";
@@ -32,6 +32,15 @@ export default function GuestInformationTable() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [search, setSearch] = useState("");
 
+  //filter
+  const [filterName, setFilterName] = useState("");
+  const [filterPhone, setFilterPhone] = useState("");
+  const [filterAddress, setFilterAddress] = useState("");
+  const [filterGuestType, setFilterGuestType] = useState("");
+  const [giveMoneyType, setGiveMoneyType] = useState("");
+  const [startDate, setStartDate] = useState<any>(null);
+  const [endDate, setEndDate] = useState<any>(null);
+
   // Pagination & data 
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,20 +48,29 @@ export default function GuestInformationTable() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const { islogin, token } = useAuth();
+  const { islogin, token} = useAuth();
 
   useEffect(() => {
     setCurrentPage(1);
   }, [sortBy, sortDirection]);
 
+  // // load when token ready
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchGuest();
+  //   }
+  // }, [token]);
   // Fetch guests 
   useEffect(() => {
-    if (islogin && token) {
+    if (token) {
       fetchGuest();
     }
-  }, [currentPage, entriesPerPage, sortBy, sortDirection, search, token, islogin]);
+  }, [currentPage, entriesPerPage, sortBy, sortDirection,startDate,filterGuestType, giveMoneyType, endDate, search,token]);
+
+    // filterGuestType, filterName, filterPhone, filterAddress, startDate, endDate,
 
   const fetchGuest = async () => {
+    if (!token) return;
     try {
       setLoading(true);
 
@@ -63,9 +81,22 @@ export default function GuestInformationTable() {
           sort_by: sortBy,
           sort_direction: sortDirection,
           search: search,
+
+          // ✅ ADD FILTERS HERE
+          guest_type: filterGuestType || undefined,
+          start_date: startDate ? startDate.format("YYYY-MM-DD") : undefined,
+          end_date: endDate ? endDate.format("YYYY-MM-DD") : undefined,
+
+          //  (if backend supports)
+          guest_name: filterName || undefined,
+          phone_number: filterPhone || undefined,
+          address: filterAddress || undefined,
+          give_money_type: giveMoneyType || undefined,
+
         },
         headers: {
           Authorization: `Bearer ${token}`,
+        
         },
       });
 
@@ -78,9 +109,9 @@ export default function GuestInformationTable() {
     }
   };
 
-  const handleSuccess = () => {
-    fetchGuest();
-  }
+  // const handleSuccess = () => {
+  //   fetchGuest();
+  // }
 
   const columns = [
     {
@@ -157,14 +188,14 @@ export default function GuestInformationTable() {
     try {
       setSaving(true);
 
-     const payload = {
+      const payload = {
         guest_name: formData.guest_name,
         guest_type: formData.guest_type,
         phone_number: formData.phone_number,
         address: formData.address,
         remark: formData.remark,
         give_money_type_id: formData.give_money_type_id,
-        user_id: 1, 
+        user_id: 1 
       };
 
       if (mode === "edit" && formData.guest_id) {
@@ -210,6 +241,9 @@ export default function GuestInformationTable() {
       setExporting(true);
       const response = await api.get("/guest/exportcsv", {
         responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       const blob = response.data;
       let fileName = `guests-export-${new Date().toISOString().split("T")[0]}.xlsx`;
@@ -234,7 +268,7 @@ export default function GuestInformationTable() {
     } catch (err: any) {
       console.error("Export failed:", err);
       if (err.response?.status === 401) {
-        alert("សម័យផុតកំណត់ — សូមចូលគណនីឡើងវិញ");
+        alert("ផុតកំណត់ — សូមចូលគណនីឡើងវិញ");
       } else if (err.response?.status === 403) {
         alert("អ្នកមិនមានសិទ្ធិទាញយកទិន្នន័យនេះទេ");
       } else {
@@ -273,6 +307,8 @@ export default function GuestInformationTable() {
                     bordered={false}
                     placeholder="បញ្ចូលឈ្មោះ..."
                     className="h-10"
+                      value={filterName}
+                      onChange={(e) => setFilterName(e.target.value)}
                   />
                 </div>
 
@@ -282,12 +318,14 @@ export default function GuestInformationTable() {
                     <DatePicker
                       style={{ backgroundColor: "#ffffff" }}
                       bordered={false}
-                      className="w-full h-10"
+                      className="w-full cursor-pointer h-10"
+                      onChange={(date) => setStartDate(date)}
                     />
                     <DatePicker
                       style={{ backgroundColor: "#ffffff" }}
                       bordered={false}
-                      className="w-full h-10"
+                      className="w-full cursor-pointer h-10"
+                      onChange={(date) => setEndDate(date)}
                     />
                   </div>
                 </div>
@@ -297,8 +335,11 @@ export default function GuestInformationTable() {
                   <Input
                     style={{ backgroundColor: "#ffffff" }}
                     bordered={false}
+                    
                     placeholder="បញ្ចូលលេខទូរស័ព្ទ..."
                     className="h-10"
+                      value={filterPhone}
+                      onChange={(e) => setFilterPhone(e.target.value)}
                   />
                 </div>
 
@@ -309,15 +350,33 @@ export default function GuestInformationTable() {
                     bordered={false}
                     placeholder="បញ្ចូលទីតាំង..."
                     className="h-10"
+                      value={filterAddress}
+                     onChange={(e) => setFilterAddress(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-[#E11D48] font-medium text-base">
+                    យកដៃ / សងដៃ:
+                  </label>
+                  < Select
+                    className="w-full h-10"
+                    placeholder="ជ្រើសរើស..."
+                    value={giveMoneyType}
+                    allowClear
+                    onChange={(value) => setGiveMoneyType(value)}
+                    options={[
+                      { value: 1, label: "យកដៃ" },
+                      { value: 2, label: "សងដៃ" },
+                    ]}
                   />
                 </div>
 
                 <div className="text-[#E11D48] font-medium text-[16px] block mb-2 gap-1">
                   <label className="text-[#E11D48] mr-7 font-medium text-base">ភ្ញៀវខាង:</label>
-                  <Radio.Group className="flex gap-4 mt-2">
+                  <Radio.Group onChange={(e) => setFilterGuestType(e.target.value)} className="flex gap-4 mt-2">
                     <Radio value={1}>ខាងប្រុស</Radio>
                     <Radio value={2}>ខាងស្រី</Radio>
-                    <Radio value={3}>ផ្សេងៗ</Radio>
+                    <Radio value={3}>ទាំងសង​ខាង</Radio>
                   </Radio.Group>
                 </div>
 
@@ -341,6 +400,11 @@ export default function GuestInformationTable() {
                   <Allbutton
                     children="អនុវត្តន៍"
                     className="bg-[#e11d48] from-[#e11d48] hover:bg-rose-500  text-white shadow-lg shadow-gray-600/40 text-lg font-medium px-6 py-2.5 rounded-lg min-w-[140px] sm:min-w-[160px] transition-all duration-150"
+                     onClick={() => {
+                      if (loading) return;
+                      setCurrentPage(1);
+                      fetchGuest();
+                    }}
                   />
                 </div>
               </div>
@@ -351,6 +415,10 @@ export default function GuestInformationTable() {
             <Button
               type="primary"
               onClick={() => {
+                // if (!user?.id) {
+                //   message.error("សូមចូលគណនីជាមុន");
+                //   return;
+                // }
                 setMode("create");
                 setSelectedRow(null);
                 setModalOpen(true);

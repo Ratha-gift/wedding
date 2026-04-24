@@ -24,14 +24,14 @@ const DropdownProfile: React.FC<DropdownProfileProps> = ({
   const router = useRouter();
 
   //  IMAGE STATE (HERE ONLY)
-  const [profileImage, setProfileImage] = useState('/Ratha.png');
+  const [profileImage, setProfileImage] = useState('/pic.png');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const items: MenuProps['items'] = [
     {
       key: 'edit-profile',
       label: (
-        <div className="flex items-center gap-2 py-1">
+        <div className="flex items-center gap-2 py-1 menu-item">
           <FaUser size={18} color="#e11d48" />
           <span>មើលព័ត៍មានគណនី</span>
         </div>
@@ -41,7 +41,7 @@ const DropdownProfile: React.FC<DropdownProfileProps> = ({
     {
       key: 'logout',
       label: (
-        <div className="flex items-center gap-2 py-1 text-red-600">
+        <div className="flex items-center gap-2 py-1 logout-item">
           <IoLogOutOutline size={18} />
           <span>ចាកចេញ</span>
         </div>

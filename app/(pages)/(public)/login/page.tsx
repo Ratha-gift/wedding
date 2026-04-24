@@ -92,7 +92,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 "
+                className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 "
               >
                 {showPassword ? <Eye /> : <EyeOff />}
               </button>
@@ -111,7 +111,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className=" mt-[50px] w-full py-4 rounded-xl bg-[#e11d48] text-white text-xl font-semibold"
+            className=" mt-[50px] w-full py-4 cursor-pointer rounded-xl bg-[#e11d48] text-white text-xl font-semibold"
           >
             {loading ? 'កំពុងចូល...' : 'ចូល'}
           </button>

@@ -32,7 +32,7 @@ export default function HomePage() {
           </h1>
         </Link>
 
-        <Link href="./amount">
+        <Link href="./currency">
           <h1 className={`w-xs h-14 bg-[#E11D48] font-medium text-white text-xl flex items-center justify-center rounded-xl shadow-xl `}>
             បញ្ចូលចំណងដៃ
           </h1>
