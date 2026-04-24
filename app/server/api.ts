@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuth } from '@/app/src/lib/useAuth';   // ← adjust path if needed
 
 const api = axios.create({
-  baseURL: 'https://wedding.ezegroup.store/api',
+  baseURL: 'http://127.0.0.1:8000/api',
   timeout: 10000,
   headers: {
     'Accept': 'application/json',

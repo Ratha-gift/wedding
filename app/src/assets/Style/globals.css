@@ -76,3 +76,58 @@ textarea:-webkit-autofill {
   box-shadow: 0 0 0px 1000px var(--input-autofill) inset !important;
   -webkit-text-fill-color: var(--text-color) !important;
 }
+
+/* 
+normal item
+.ant-dropdown-menu-item:hover {
+  background-color: #e11d48 !important;
+}
+
+.ant-dropdown-menu-item:hover .menu-item,
+.ant-dropdown-menu-item:hover .logout-item {
+  color: #ffffff !important;
+}
+
+/* icon also white */
+/* .ant-dropdown-menu-item:hover svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+} */ 
+
+/* Remove default padding */
+.ant-dropdown-menu {
+  padding: 8px !important;
+  border-radius: 14px !important;
+}
+
+/* Base item style */
+.ant-dropdown-menu-item {
+  border-radius: 10px !important;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Custom inner container */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+.ant-dropdown-menu-item:hover {
+  background: linear-gradient(135deg, #e11d48, #be123c) !important;
+  transform: scale(1.03);
+}
+.ant-dropdown-menu-item:hover .dropdown-item {
+  color: #ffffff !important;
+}
+
+.ant-dropdown-menu-item:hover svg {
+  color: #ffffff !important;
+  transform: translateX(4px);
+}
+
+/* Icon animation */
+.dropdown-item svg {
+  transition: all 0.3s ease;
+}
