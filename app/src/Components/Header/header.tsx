@@ -45,8 +45,8 @@ function Header({ title = "គ្រប់គ្រងអ្នកប្រើ�
 
   const toggleTheme = () => setDark(prev => !prev);
 
-  // prevent hydration flicker
-  if (!mounted) return null;
+  // prevent hydration flicker — return same-height placeholder so layout doesn't shift
+  if (!mounted) return <div className="w-full h-19 bg-rose-600" />;
 
   return (
     <div className="w-full h-19 bg-rose-600 dark:bg-gray-900 flex items-center p-4 transition-colors duration-300">
@@ -63,7 +63,7 @@ function Header({ title = "គ្រប់គ្រងអ្នកប្រើ�
       <div className=" w-full h-16 flex justify-end items-center gap-2 sm:gap-6 px-2">
         <button
           onClick={toggleTheme}
-          className="rounded-lg transition-all duration-300 text-white dark:text-gray-100 hover:scale-110"
+          className="rounded-lg transition-all cursor-pointer duration-300 text-white dark:text-gray-100 hover:scale-110"
         >
           {dark ? (
             <RiMoonClearLine size={24} />

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from 'lucide-react';
 
 interface SearchnameProps {
-  Children?: string; // ← សម្រាប់ input placeholder
+  Children?: string;
   className?: string;
   textColor?: string;
   width?: string;
@@ -12,19 +12,23 @@ interface SearchnameProps {
   shadow?: string;
   type?: string;
   focus?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-function Search({ 
+function Search({
     Children = "",
     className,
-    textColor = "", 
-    width = "w-85", 
-    height = "h-12", 
+    textColor = "",
+    width = "w-85",
+    height = "h-12",
     border = "",
     radius = "rounded-md",
-    shadow = "", 
+    shadow = "",
     type = "text",
-    focus = "focus:outline focus:outline-[#e11d48]"
+    focus = "focus:outline focus:outline-[#e11d48]",
+    value,
+    onChange,
 }: SearchnameProps) {
 
   const [showPassword, setShowPassword] = useState(false);
@@ -32,10 +36,12 @@ function Search({
 
   return (
     <div className={`relative`}>
-      <input 
+      <input
         type={inputType}
-        className={`${textColor} ${width} ${height} ${border} ${radius} ${className} ${shadow} ${focus} pr-10`}  
-        placeholder={Children} 
+        className={`${textColor} ${width} ${height} ${border} ${radius} ${className} ${shadow} ${focus} pr-10`}
+        placeholder={Children}
+        value={value}
+        onChange={onChange}
       />
       {type === "password" && (
         <span 
