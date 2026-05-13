@@ -29,12 +29,8 @@ export default function LoginPage() {
         password,
       });
 
-      const { access_token } = res.data;
-      console.log("test_token", access_token);
-    
-      // Redirect to home
-      
-      onLogin(access_token)
+      const { access_token, data } = res.data;
+      onLogin(access_token, data);
       router.push("/")
 
     } catch (err) {

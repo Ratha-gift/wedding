@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ConfigProvider } from 'antd';
 import Header from "@/app/src/Components/Header/header";
 import Search from "@/app/src/Components/Button/search";
 import Table from "@/app/src/Components/Table/table";
@@ -21,7 +20,7 @@ import { useRequireAuth } from '@/app/src/Hooks/useAuthRedirect';
 
 import api from "../../../server/api";
 import ModalCreate from "@/app/src/Components/Modal/modal";
-import { message, Modal } from "antd";
+import { message, Select } from "antd";
 
 
 export default function settingsPage() {
@@ -32,12 +31,10 @@ export default function settingsPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [openModal, setOpenModal] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [filterStatusSelect, setFilterStatusSelect] = useState<number | null>(null);
 
   const [fetchLoading, setFetchLoading] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
-  const [editUser, setEditUser] = useState<any>(null);
 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
@@ -45,9 +42,11 @@ export default function settingsPage() {
   const [sortBy, setSortBy] = useState<string>("user_id");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  const [profileImage, setProfileImage] = useState<string>(
-    "/pic.png"
-  );
+  // filters
+  const [search, setSearch]             = useState("");
+  const [filterStatus, setFilterStatus] = useState<boolean | undefined>(undefined);
+
+  const [roles, setRoles] = useState<{ role_id: number; role_name: string }[]>([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
@@ -56,14 +55,20 @@ export default function settingsPage() {
     try {
       setLoading(true);
 
-      if (mode === "create") {
-        await api.post("/user/create", data);
-        message.success("បង្កើតអ្នកប្រើប្រាស់បានជោគជ័យ ");
+      const payload: any = { ...data };
+      if (!payload.password) {
+        delete payload.password;
+        delete payload.password_confirmation;
+      }
+      if (!payload.image_profile) delete payload.image_profile;
 
-      }// } else {
-      //   await api.put(`/user/update/${data.user_id}`, data);
-      //   message.success("កែសម្រួលបានជោគជ័យ ✅");
-      // }
+      if (mode === "create") {
+        await api.post("/user/create", payload);
+        message.success("បង្កើតអ្នកប្រើប្រាស់បានជោគជ័យ");
+      } else {
+        await api.put(`/user/update/${selectedUser.user_id}`, payload);
+        message.success("កែសម្រួលបានជោគជ័យ");
+      }
 
       setModalOpen(false);
       setIsViewOpen(false);
@@ -77,25 +82,8 @@ export default function settingsPage() {
       setLoading(false);
     }
   };
-  const handleUpdate = async () => {
-    try {
-      await api.put(`/user/${editUser.user_id}`, editUser);
-
-      message.success("កែសម្រួលបានជោគជ័យ ");
-      fetchUsers(currentPage);
-    } catch (err) {
-      message.error("កែសម្រួលបរាជ័យ ");
-    }
-  };
-
-  const handleImageChange = (img: string) => {
-    fetchUsers(currentPage);
-    setProfileImage(img);
-  };
-
   const fetchUsers = async (page: number) => {
     setFetchLoading(true);
-
     try {
       const res = await api.get("/user/list", {
         params: {
@@ -103,11 +91,12 @@ export default function settingsPage() {
           per_page: entriesPerPage,
           sort_by: sortBy,
           sort_direction: sortDirection,
+          search: search || undefined,
+          show_all: filterStatus === undefined ? 1 : 0,
+          status: filterStatus === undefined ? undefined : filterStatus ? 1 : 0,
         },
       });
-
       const { data = [], meta = {} } = res.data ?? {};
-
       setUsers(data);
       setTotal(meta.total || meta.total_records || 0);
     } catch (err) {
@@ -117,33 +106,13 @@ export default function settingsPage() {
     }
   };
 
-  // const handleSubmit = async (data: any) => {
-  //   try {
-  //     setLoading(true);
-
-  //     if (mode === "create") {
-  //       await api.post("/user/store", data);
-  //     } else {
-  //       await api.put(`/user/update/${data.user_id}`, data);
-  //     }
-
-  //     // close modal
-  //     setModalOpen(false);
-  //     setIsViewOpen(false);
-
-  //     // refresh list
-  //     await fetchUsers(currentPage);
-
-  //   } catch (error: any) {
-  //     console.error(error.response?.data || error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    api.get("/roles").then((res) => setRoles(res.data?.data ?? [])).catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetchUsers(currentPage);
-  }, [currentPage, entriesPerPage, sortBy, sortDirection]);
+  }, [currentPage, entriesPerPage, sortBy, sortDirection, search, filterStatus]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -156,6 +125,18 @@ export default function settingsPage() {
   };
 
 
+  const filteredUsers = search.trim()
+    ? users.filter((row) => {
+        const q = search.trim().toLowerCase();
+        return (
+          row.first_name?.toLowerCase().includes(q) ||
+          row.last_name?.toLowerCase().includes(q) ||
+          row.user_name?.toLowerCase().includes(q) ||
+          row.email?.toLowerCase().includes(q)
+        );
+      })
+    : users;
+
   const columns = [
     {
       header: "ល.រ",
@@ -166,8 +147,24 @@ export default function settingsPage() {
           {row.user_id}
         </div>
       ),
-      width: 40,
+      width: 35,
     },
+    // {
+    //   header: "រូបភាព",
+    //   accessor: "image_profile",
+    //   sortable: false,
+    //   width: 45,
+    //   render: (row: any) => (
+    //     <div className="flex justify-start">
+    //       <img
+    //         src={row.image_profile || "/pic.png"}
+    //         alt="profile"
+    //         className="w-7 h-7 rounded-full object-cover border border-gray-200"
+    //         onError={(e) => { (e.target as HTMLImageElement).src = "/pic.png"; }}
+    //       />
+    //     </div>
+    //   ),
+    // },
     {
       header: "នាមត្រកូល",
       accessor: "first_name",
@@ -175,12 +172,9 @@ export default function settingsPage() {
       render: (row: any) => (
         <div className="truncate">
           {row.first_name}
-
         </div>
-
       ),
       width: 90,
-
     },
     {
       header: "នាមត្រខ្លួន",
@@ -191,7 +185,9 @@ export default function settingsPage() {
           {row.last_name}
         </div>
       ),
+      width: 90,
     },
+    
     {
       header: "Email",
       accessor: "email",
@@ -212,6 +208,7 @@ export default function settingsPage() {
           {row.user_name}
         </div>
       ),
+      width: 90,
     },
 
     {
@@ -219,10 +216,10 @@ export default function settingsPage() {
       accessor: "actions",
       sortable: true,
       width: 100,
-      // cellPadding: ' pl-1 pr-2',
-      render: (row: any) => (
-        <div className="flex ">
-          <Actions icon={<RiLockPasswordFill size={24} color="#e11d48" />}
+      // cellPadding: ' pl-1 pr-2',9
+      render: (row: any) => ( 
+        <div className="flex gap-2  items-center">
+          <Actions icon={<RiLockPasswordFill size={20} color="#e11d48" />}
             modalTitle="ផ្លាស់ប្ដូរលេខសម្ងាត់ថ្មី"
             Radius="50px"
             width="630px"
@@ -256,89 +253,17 @@ export default function settingsPage() {
           </Actions>
           
           <BiSolidEdit
-            size={24}
+            size={20}
             color="#e11d48"
             className="cursor-pointer"
             onClick={() => {
               setSelectedUser(row);
-              setEditUser(row);
               setMode("edit");
               setIsViewOpen(true);
             }}
           />
-          <ModalCreate
-            open={isViewOpen}
-            onCancel={() => setIsViewOpen(false)}
-            onSubmit={handleSubmit}
-            mode="edit"
-            type="user"
-            initialData={selectedUser}
-            loading={loading}
-          />
-          {/* <div className="flex mt-10 gap-13 items-center ">
-              <div className=" grid ">
-                <h1 className="text-xl text-[#e11d48]">នាមត្រកូល</h1>
-                <Search
-                  Children="នាមត្រកូល"
-                  value={editUser?.last_name || ""}
-                  onChange={(e: any) =>
-                    setEditUser({
-                      ...editUser,
-                      last_name: e.target.value,
-                    })
-                  }
-                  className="bg-white text-xl p-3 w-90"
-                />
-                <h1 className="mt-5 text-xl text-[#e11d48]">នាមខ្លួន</h1>
-                <Search
-                  Children="នាមខ្លួន"
-                  value={editUser?.first_name || ""}
-                  onChange={(e: any) =>
-                    setEditUser({
-                      ...editUser,
-                      first_name: e.target.value,
-                    })
-                  }
-                  className="bg-white text-xl p-3 w-90"
-                />
-              </div>
-              <ProfileEdit image={profileImage} onChangeImage={handleImageChange} />
-            </div>
 
-            <h1 className="text-xl text-[#e11e48] mt-4">ឈ្មោះអ្នកប្រើប្រាស់</h1>
-            <Search
-              Children="ឈ្មោះអ្នកប្រើប្រាស់"
-              value={editUser?.username || ""}
-              onChange={(e: any) =>
-                setEditUser({
-                  ...editUser,
-                  username: e.target.value,
-                })
-              }
-              className="bg-white text-xl p-3 w-135 mb-4"
-            />
-            <div className="h-50 ">
-              <DropdownForm />
-            </div> */}
-          {/* <div className="flex justify-center items-center gap-8 h-20 ">
-            <Button Children="បោះបង់" className=" w-45 h-12 bg-[#e7e7e7] text-[#e11d48] shadow-lg text-xl" />
-            <Button Children="រក្សាទុក" className=" text-white shadow-lg w-45 h-12 text-xl" />
-           </div> */}
-          {/* 
-            <div className="flex items-center justify-center gap-6 sm:gap-8 h-20 px-4">
-              <Button
-                children="បោះបង់"
-                className="w-44 sm:w-48 h-12 px-6 bg-gray-100 text-rose-600 hover:bg-gray-200 active:bg-gray-300 font-medium text-xl rounded-xl shadow-md hover:shadow-lg transition-all duration-150"
-              />
-
-              <Button
-                children="រក្សាទុក"
-                onClick={handleUpdate}
-                className="w-44 sm:w-48 h-12 px-6 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium text-xl rounded-xl shadow-lg shadow-rose-600/30 hover:shadow-xl transition-all duration-150"
-              />
-            </div>
-          </ModalCreate> */}
-          <Actions icon={<MdDelete size={23} color="#e11d48" />}
+          <Actions icon={<MdDelete size={20} color="#e11d48" />}
             modalTitle=""
             iconTitle={<FaExclamationTriangle size={100} color="#e11d48"/>}
             classNames=" flex justify-center items-end h-30"
@@ -395,50 +320,41 @@ export default function settingsPage() {
       render: (row: any) => (
         <div className="flex justify-center">
           <MySwitch
-            // checked={row.status === 1}
-            // disabled={actionLoadingId === row.user_id}
-            // loading={actionLoadingId === row.user_id}
-            // onChange={async (checked: boolean) => {
+            checked={row.status === 1}
+            disabled={actionLoadingId === row.user_id}
+            loading={actionLoadingId === row.user_id}
+            onChange={async (checked: boolean) => {
 
-            //   const newStatus = checked ? 1 : 0;
+              const newStatus = checked ? 1 : 0;
 
-            //   // optimistic UI update
-            //   setUsers(prev =>
-            //     prev.map(u =>
-            //       u.user_id === row.user_id
-            //         ? { ...u, status: newStatus }
-            //         : u
-            //     )
-            //   );
+              // optimistic UI update
+              setUsers(prev =>
+                prev.map(u =>
+                  u.user_id === row.user_id
+                    ? { ...u, status: newStatus }
+                    : u
+                )
+              );
 
-            //   setActionLoadingId(row.user_id);
+              setActionLoadingId(row.user_id);
 
-            //   try {
-            //     await api.get("/user/list", {
-            //       params: {
-            //         // search: searchValue,
-            //         // status: statusValue,
-            //         show_all: 1,
-            //         page: currentPage
-            //       }
-            //     });
-
-            //     message.success("ប្ដូរស្ថានភាពបានជោគជ័យ 🔄");
-            //   } catch {
-            //     // rollback
-            //     setUsers(prev =>
-            //       prev.map(u =>
-            //         u.user_id === row.user_id
-            //           ? { ...u, status: row.status }
-            //           : u
-            //       )
-            //     );
-
-            //     message.error("ប្ដូរស្ថានភាពបានបរាជ័យ ❌");
-            //   } finally {
-            //     setActionLoadingId(null);
-            //   }
-            // }}
+              try {
+                await api.put(`/user/update/${row.user_id}`, { status: newStatus });
+                message.success("ប្ដូរស្ថានភាពបានជោគជ័យ");
+              } catch {
+                // rollback on error
+                setUsers(prev =>
+                  prev.map(u =>
+                    u.user_id === row.user_id
+                      ? { ...u, status: row.status }
+                      : u
+                  )
+                );
+                message.error("ប្ដូរស្ថានភាពបានបរាជ័យ");
+              } finally {
+                setActionLoadingId(null);
+              }
+            }}
           />
         </div>
       ),
@@ -446,19 +362,6 @@ export default function settingsPage() {
   ];
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#E11D48',
-        },
-        components: {
-          Pagination: {
-            itemActiveColor: '#E11D48',
-            itemActiveBg: '#fff1f0',
-          },
-        },
-      }}
-    >
       <div className="bg-gray-200 min-h-screen">
         <div>
           <Header />
@@ -467,31 +370,49 @@ export default function settingsPage() {
           {/* <div className="bg-white p-3 shadow-sm"> */}
           <div className="w-full flex items-center pb-2 gap-2 p-1 flex-wrap">
             <div className="w-full sm:w-60 h-11 flex gap-1 ">
-              <SearchInput />
+              <SearchInput
+                value={search}
+                placeholder="ស្វែងរក..."
+                onChange={(e: any) => { setSearch(e.target.value); setCurrentPage(1); }}
+              />
             </div>
             <div className="w-24 h-11">
               <DrawerFilter width={400}>
-                <div className="">
-                  <h1 className="text-lg text-[#e11d48] font-bold">ឈ្មោះ</h1>
-                  <Search Children="ស្វែងរកតាមឈ្មោះ..." className="bg-white p-3 text-lg w-88 " />
+      
+                <div>
+                  <label className="text-[#E11D48] font-medium text-base">
+                    Active / InActive
+                  </label> 
+                  <Select
+                    className="w-full h-10"
+                    placeholder="ជ្រើសរើស..."
+                    value={filterStatusSelect}
+                    allowClear
+                    onChange={(value) => setFilterStatusSelect(value ?? null)}
+                    options={[
+                      { value: 1, label: "Active" },
+                      { value: 0, label: "InActive" },
+                    ]}
+                  />
                 </div>
-                <div className="bg-white w-88 h-12 mt-7 rounded-md flex items-center justify-between p-4">
-                  <h1 className="text-lg text-[#e11d48] font-bold">ស្ថានភាព</h1>
-                  <MySwitch />
-                </div>
-                {/* <div className=" w-88 h-15 flex items-end gap-5">
-                  <Button Children='បោះបង់' className='bg-[#e7e7e7] text-[#e11d48] shadow-lg text-lg w-40' />
-                  <Button Children='អនុវត្តន៍' className='text-white text-lg shadow-lg shadow-[#9c9c9c] w-50' />
-                </div> */}
 
-                <div className="w-88 h-15 mt-8 flex items-center justify-center gap-5 px-4"> {/* changed items-end → items-center for better alignment */}
+                <div className="w-88 h-15 mt-135 flex items-center justify-center gap-5 px-4">
                   <Button
                     children="បោះបង់"
                     className="w-40 sm:w-44 h-11 px-5 bg-gray-100 text-rose-600 hover:bg-gray-200 active:bg-gray-300 font-medium text-lg rounded-lg shadow-md hover:shadow transition-all duration-150"
+                    onClick={() => { setFilterStatusSelect(null); setFilterStatus(undefined); }}
                   />
                   <Button
                     children="អនុវត្តន៍"
                     className=" w-48 sm:w-52 h-11 px-6 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium text-lg rounded-lg shadow-lg shadow-rose-600/30 hover:shadow-xl transition-all duration-150"
+                    onClick={() => {
+                      setCurrentPage(1);
+                      setFilterStatus(
+                        filterStatusSelect === 1 ? true :
+                        filterStatusSelect === 0 ? false :
+                        undefined
+                      );
+                    }}
                   />
                 </div>
               </DrawerFilter>
@@ -516,6 +437,7 @@ export default function settingsPage() {
                 mode="create"
                 type="user"
                 loading={loading}
+                roles={roles}
               />
               <ModalCreate
                 open={isViewOpen}
@@ -525,6 +447,7 @@ export default function settingsPage() {
                 type="user"
                 initialData={selectedUser}
                 loading={loading}
+                roles={roles}
               />
               {/* <ModalCreate
                 open={openModal}
@@ -542,9 +465,9 @@ export default function settingsPage() {
             </div>
           </div>
           <Table
-            data={users}
+            data={filteredUsers}
             columns={columns}
-            loading={loading}
+            loading={fetchLoading}
             clickableRows={true}
             height="13rem"
             highlightSelectedRow={true}
@@ -576,6 +499,5 @@ export default function settingsPage() {
           {/* </div> */}
         </div>
       </div>
-    </ConfigProvider >
   );
 }

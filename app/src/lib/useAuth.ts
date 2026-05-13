@@ -1,11 +1,24 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+export interface AuthUser {
+  user_id: number;
+  first_name?: string;
+  last_name?: string;
+  user_name: string;
+  email?: string;
+  image_profile?: string;
+  role_id?: number;
+  role_name?: string;
+}
+
 interface AuthStore {
   islogin: boolean;
   token?: string;
-  onLogin: (token: string) => void;
+  user?: AuthUser;
+  onLogin: (token: string, user: AuthUser) => void;
   onLogout: () => void;
+  setUser: (user: AuthUser) => void;
   hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
 }
@@ -15,9 +28,10 @@ export const useAuth = create<AuthStore>()(
     (set) => ({
       islogin: false,
       token: undefined,
-      onLogin: (token: string) => set({ islogin: true, token }),
-      onLogout: () => set({ islogin: false, token: undefined }),
-    
+      user: undefined,
+      onLogin: (token, user) => set({ islogin: true, token, user }),
+      onLogout: () => set({ islogin: false, token: undefined, user: undefined }),
+      setUser: (user) => set({ user }),
       hasHydrated: false,
       setHasHydrated: (state) => set({ hasHydrated: state }),
     }),
@@ -27,13 +41,11 @@ export const useAuth = create<AuthStore>()(
       partialize: (state) => ({
         islogin: state.islogin,
         token: state.token,
+        user: state.user,
       }),
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          state.setHasHydrated(true);
-        }
+        if (state) state.setHasHydrated(true);
       },
     }
   )
 );
-

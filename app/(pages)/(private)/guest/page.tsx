@@ -4,7 +4,10 @@ import api from "@/app/server/api";
 import { useEffect, useState } from "react";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
-import { message, Select } from "antd";
+import { message, Select, Modal, Upload } from "antd";
+import { CloudUploadOutlined } from "@ant-design/icons";
+
+const { Dragger } = Upload;
 // components
 import Header from "@/app/src/Components/Header/header";
 import Table from "@/app/src/Components/Table/table";
@@ -37,7 +40,7 @@ export default function GuestInformationTable() {
   const [filterPhone, setFilterPhone] = useState("");
   const [filterAddress, setFilterAddress] = useState("");
   const [filterGuestType, setFilterGuestType] = useState("");
-  const [giveMoneyType, setGiveMoneyType] = useState("");
+  const [giveMoneyType, setGiveMoneyType] = useState<number | undefined>(undefined);
   const [startDate, setStartDate] = useState<any>(null);
   const [endDate, setEndDate] = useState<any>(null);
 
@@ -48,7 +51,7 @@ export default function GuestInformationTable() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const { islogin, token} = useAuth();
+  const { islogin, token, hasHydrated } = useAuth();
 
   useEffect(() => {
     setCurrentPage(1);
@@ -62,10 +65,11 @@ export default function GuestInformationTable() {
   // }, [token]);
   // Fetch guests 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (token) {
       fetchGuest();
     }
-  }, [currentPage, entriesPerPage, sortBy, sortDirection,startDate,filterGuestType, giveMoneyType, endDate, search,token]);
+  }, [currentPage, entriesPerPage, sortBy, sortDirection, startDate, filterGuestType, giveMoneyType, endDate, search, token, hasHydrated]);
 
     // filterGuestType, filterName, filterPhone, filterAddress, startDate, endDate,
 
@@ -91,7 +95,7 @@ export default function GuestInformationTable() {
           guest_name: filterName || undefined,
           phone_number: filterPhone || undefined,
           address: filterAddress || undefined,
-          give_money_type: giveMoneyType || undefined,
+          give_money_type_id: giveMoneyType || undefined,
 
         },
         headers: {
@@ -100,7 +104,8 @@ export default function GuestInformationTable() {
         },
       });
 
-      setData(res.data.data || []);
+      const rows = res.data.data || [];
+      setData(rows);
       setTotalEntries(res.data.meta?.total || 0);
     } catch (err: any) {
       console.error("FETCH ERROR:", err.response?.data || err.message);
@@ -112,6 +117,14 @@ export default function GuestInformationTable() {
   // const handleSuccess = () => {
   //   fetchGuest();
   // }
+
+  const filteredData = search.trim()
+    ? data.filter((row) =>
+        row.guest_name?.toLowerCase().includes(search.trim().toLowerCase())
+      )
+    : data;
+
+  const displayTotal = search.trim() ? filteredData.length : totalEntries;
 
   const columns = [
     {
@@ -131,6 +144,19 @@ export default function GuestInformationTable() {
         <div className="truncate w-full">{row.guest_name}</div>
       ),
       width: 100,
+    },
+    {
+      header: "កាលបរិច្ឆេទ",
+      accessor: "created_at",
+      sortable: true,
+      render: (row: any) => {
+        const raw = row.created_at;
+        if (!raw) return <div className="truncate w-full">—</div>;
+        const d = new Date(raw);
+        const formatted = isNaN(d.getTime()) ? raw : d.toISOString().slice(0, 10);
+        return <div className="truncate w-full">{formatted}</div>;
+      },
+      width: 120,
     },
     {
       header: "ភ្ញៀវខាង",
@@ -221,15 +247,39 @@ export default function GuestInformationTable() {
     }
   };
 
-  // // fetch update 
+  // // fetch update  
   // const handleEdit = (row: any) => {
   //   setMode("edit");
   //   setSelectedRow(row);
   //   setModalOpen(true);
   // };
 
-  // Export Excel 
+  // Export / Import
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+
+  const handleImportUpload = async () => {
+    if (!importFile || !token) return;
+    const fd = new FormData();
+    fd.append('file', importFile);
+    try {
+      setImporting(true);
+      await api.post('/guest/importcsv', fd, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+      });
+      message.success('បញ្ចូលជោគជ័យ');
+      setImportModalOpen(false);
+      setImportFile(null);
+      fetchGuest();
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'បញ្ចូលបានបរាជ័យ';
+      message.error(msg, 6);
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const handleExportExcel = async () => {
     if (!islogin || !token) {
@@ -300,7 +350,7 @@ export default function GuestInformationTable() {
 
             <DrawerFilter width={400}>
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <label className="text-red-600 font-medium text-base">ឈ្មោះ</label>
                   <Input
                     style={{ backgroundColor: "#ffffff" }}
@@ -310,7 +360,7 @@ export default function GuestInformationTable() {
                       value={filterName}
                       onChange={(e) => setFilterName(e.target.value)}
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <label className="text-red-600 font-medium text-base">កាលបរិច្ឆេទ</label>
@@ -319,13 +369,17 @@ export default function GuestInformationTable() {
                       style={{ backgroundColor: "#ffffff" }}
                       bordered={false}
                       className="w-full cursor-pointer h-10"
+                      value={startDate}
                       onChange={(date) => setStartDate(date)}
+                      placeholder="ពី..."
                     />
                     <DatePicker
                       style={{ backgroundColor: "#ffffff" }}
                       bordered={false}
                       className="w-full cursor-pointer h-10"
+                      value={endDate}
                       onChange={(date) => setEndDate(date)}
+                      placeholder="ដល់..."
                     />
                   </div>
                 </div>
@@ -373,10 +427,14 @@ export default function GuestInformationTable() {
 
                 <div className="text-[#E11D48] font-medium text-[16px] block mb-2 gap-1">
                   <label className="text-[#E11D48] mr-7 font-medium text-base">ភ្ញៀវខាង:</label>
-                  <Radio.Group onChange={(e) => setFilterGuestType(e.target.value)} className="flex gap-4 mt-2">
-                    <Radio value={1}>ខាងប្រុស</Radio>
-                    <Radio value={2}>ខាងស្រី</Radio>
-                    <Radio value={3}>ទាំងសង​ខាង</Radio>
+                  <Radio.Group
+                    value={filterGuestType}
+                    onChange={(e) => setFilterGuestType(e.target.value)}
+                    className="flex gap-4 mt-2"
+                  >
+                    <Radio value="ខាងប្រុស">ខាងប្រុស</Radio>
+                    <Radio value="ខាងស្រី">ខាងស្រី</Radio>
+                    <Radio value="">ទាំងអស់</Radio>
                   </Radio.Group>
                 </div>
 
@@ -391,10 +449,14 @@ export default function GuestInformationTable() {
                   />
                 </div> */}
 
-                <div className="flex items-center justify-center gap-4 mt-6 px-4 sm:px-0">
+                <div className="flex items-center justify-center gap-4 mt-60 px-4 sm:px-0">
                   <Allbutton
-                    children="បោះបង់"           // ← should be lowercase 'children' in most React components
+                    children="បោះបង់"
                     className=" bg-gray-200 text-rose-600  hover:bg-gray-200 active:bg-gray-300 shadow-md hover:shadow text-lg font-medium px-6 py-2.5 rounded-lg min-w-[120px] sm:min-w-[140px] transition-all duration-150"
+                    onClick={() => {
+                      setFilterName(""); setFilterPhone(""); setFilterAddress("");
+                      setFilterGuestType(""); setGiveMoneyType(undefined); setStartDate(null); setEndDate(null);
+                    }}
                   />
 
                   <Allbutton
@@ -453,16 +515,52 @@ export default function GuestInformationTable() {
               {exporting ? <>កំពុងទាញយក...</> : <>ទាញយក</>}
             </button>
 
-            <button className="bg-[#686868] text-white px-4 py-1 rounded flex items-center gap-1">
+            <button
+              onClick={() => { setImportFile(null); setImportModalOpen(true); }}
+              className="bg-[#686868] hover:bg-[#4a4a4a] text-white px-4 py-1 rounded flex items-center gap-1 transition"
+            >
               <RiFileExcel2Line />
               បញ្ចូល
             </button>
           </div>
         </div>
 
+        {/* ================= IMPORT MODAL ================= */}
+        <Modal
+          title={<span className="text-base font-semibold">បញ្ចូលឯកសារ</span>}
+          open={importModalOpen}
+          onCancel={() => { setImportModalOpen(false); setImportFile(null); }}
+          centered
+          footer={null}
+          width={420}
+        >
+          <Dragger
+            accept=".xlsx,.xls,.csv"
+            maxCount={1}
+            beforeUpload={(file) => { setImportFile(file); return false; }}
+            onRemove={() => setImportFile(null)}
+            fileList={importFile ? [{ uid: '1', name: importFile.name, status: 'done' }] : []}
+          >
+            <p className="ant-upload-drag-icon">
+              <CloudUploadOutlined style={{ fontSize: 48, color: '#7c3aed' }} />
+            </p>
+            <p className="ant-upload-text">Drag or drop files, or <span className="text-blue-500">Browse</span></p>
+            <p className="ant-upload-hint text-gray-400 text-xs mt-1">.xlsx, .xls, .csv</p>
+          </Dragger>
+          <button
+            disabled={!importFile || importing}
+            onClick={handleImportUpload}
+            className={`w-full mt-4 py-2 rounded text-white font-medium transition ${
+              !importFile || importing ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#1677ff] hover:bg-[#0958d9]'
+            }`}
+          >
+            {importing ? 'កំពុងបញ្ចូល...' : 'Upload'}
+          </button>
+        </Modal>
+
         {/* TABLE  */}
         <Table
-          data={data}
+          data={filteredData}
           columns={columns}
           loading={loading}
           clickableRows={true}
@@ -495,7 +593,7 @@ export default function GuestInformationTable() {
         <div className="flex justify-end mt-3">
           <MyPagination
             currentPage={currentPage}
-            totalEntries={totalEntries}
+            totalEntries={displayTotal}
             entriesPerPage={entriesPerPage}
             onPageChange={(page) => setCurrentPage(page)}
             onEntriesPerPageChange={(value) => {
